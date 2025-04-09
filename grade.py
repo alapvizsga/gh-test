@@ -1,26 +1,35 @@
 import json
 
-results = []
-
-# Simulate test 1
-try:
+def test_addition():
     assert 1 + 1 == 2
-    results.append({"name": "addition", "status": "passed", "points": 2})
-except AssertionError:
-    results.append({"name": "addition", "status": "failed", "points": 2})
 
-# Simulate test 2
-try:
-    assert 5 * 0 == 0
-    results.append({"name": "multiply", "status": "passed", "points": 3})
-except AssertionError:
-    results.append({"name": "multiply", "status": "failed", "points": 3})
+def test_subtraction():
+    assert 5 - 3 == 2
 
-# Write to results.json
+tests = [
+    {"name": "test_addition", "func": test_addition, "points": 2},
+    {"name": "test_subtraction", "func": test_subtraction, "points": 3},
+]
+
+results = []
+total_score = 0
+max_score = sum(test["points"] for test in tests)
+
+for test in tests:
+    try:
+        test["func"]()
+        results.append({"name": test["name"], "status": "passed", "points": test["points"]})
+        total_score += test["points"]
+    except AssertionError:
+        results.append({"name": test["name"], "status": "failed", "points": 0})
+
+# Final JSON structure with the score included
+output = {
+    "score": total_score,  # This will show the total score
+    "max_score": max_score,  # This shows the max score for the assignment
+    "tests": results  # Detailed test results
+}
+
+# Write the results to the results.json file
 with open("results.json", "w") as f:
-    json.dump(results, f)
-
-# Optionally print total score
-total = sum(r["points"] for r in results if r["status"] == "passed")
-max_points = sum(r["points"] for r in results)
-print(f"Test Score: {total} / {max_points}")
+    json.dump(output, f, indent=4)
